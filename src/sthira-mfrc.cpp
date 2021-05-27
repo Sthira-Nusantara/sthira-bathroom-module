@@ -27,7 +27,6 @@ bool mfrc_readCardSerial()
 
 const char *mfrc_contentPrint()
 {
-
     Serial.println();
     Serial.print(" UID tag :");
     String content = "";
@@ -36,9 +35,7 @@ const char *mfrc_contentPrint()
     {
         content.concat(String(mfrc522.uid.uidByte[i], HEX));
     }
-
     content.toUpperCase();
     Serial.print(content);
-
     return content.c_str();
 }

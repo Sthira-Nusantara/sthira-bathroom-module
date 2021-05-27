@@ -6,6 +6,7 @@
 #include "sthira-versioning.h"
 #include "sthira-wifi.h"
 #include "sthira-mfrc.h"
+#include "sthira-pubsub.h"
 
 void setup()
 {
@@ -20,7 +21,6 @@ void setup()
   WiFi.setSleepMode(WIFI_NONE_SLEEP);
 
   delay(100);
-  // Init MFRC522
   mfrc_init();
 
   delay(100);
@@ -30,6 +30,8 @@ void setup()
   {
     version_update();
   }
+
+  pubsub_init();
 
   Serial.println("Setup done");
 }
@@ -41,17 +43,55 @@ void loop()
     setup_wifi();
   }
 
-  if (!mfrc_isNewCardPreset())
+  if (!pubsub_connected())
   {
-    return;
+    Serial.println("MQTT is NOT connected");
+    int lastReconnectAttempt = 0;
+    long now = millis();
+    if (now - lastReconnectAttempt > 5000)
+    {
+      lastReconnectAttempt = now;
+      // Attempt to reconnect
+      if (pubsub_connected())
+      {
+        lastReconnectAttempt = 0;
+      }
+    }
   }
-
-  if (!mfrc_readCardSerial())
+  else
   {
-    return;
+    client.loop();
+
+    if (!mfrc_isNewCardPreset())
+    {
+      return;
+    }
+
+    if (!mfrc_readCardSerial())
+    {
+      return;
+    }
+
+    Serial.println();
+    Serial.print(" UID tag :");
+    String content = "";
+
+    for (byte i = 0; i < mfrc522.uid.size; i++)
+    {
+      content.concat(String(mfrc522.uid.uidByte[i], HEX));
+    }
+
+    content.toUpperCase();
+    Serial.print(content);
+
+    char charBuf[content.length() + 1];
+    content.toCharArray(charBuf, content.length() + 1);
+
+    if (content != "")
+    {
+      client.publish(getCard.c_str(), charBuf);
+    }
+
+    delay(1000);
   }
-
-  Serial.println(mfrc_contentPrint());
-
-  delay(1000);
 }
