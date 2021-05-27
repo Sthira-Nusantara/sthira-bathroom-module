@@ -3,6 +3,7 @@
 #include <SPI.h>
 
 #include "sthira-opening.h"
+#include "sthira-versioning.h"
 #include "sthira-wifi.h"
 #include "sthira-mfrc.h"
 
@@ -24,6 +25,11 @@ void setup()
 
   delay(100);
   setup_wifi();
+
+  if (version_check())
+  {
+    version_update();
+  }
 
   Serial.println("Setup done");
 }
