@@ -46,18 +46,16 @@ bool version_check()
             else
             {
                 Serial.printf("[HTTPS] GET... failed, error: %s\n", https.errorToString(httpCode).c_str());
-                return false;
             }
 
             https.end();
-            return false;
         }
         else
         {
             Serial.printf("[HTTPS] Unable to connect\n");
-            return false;
         }
     }
+    return false;
 }
 
 void version_update()
