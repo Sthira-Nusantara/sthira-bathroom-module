@@ -1,12 +1,30 @@
 #include <Arduino.h>
 #include <ESP8266WiFi.h>
 #include <SPI.h>
+#include <FastLED.h>
 
 #include "sthira-opening.h"
 #include "sthira-versioning.h"
 #include "sthira-wifi.h"
 #include "sthira-mfrc.h"
 #include "sthira-pubsub.h"
+
+#define NUM_LEDS 1
+#define DATA_PIN 3
+
+CRGB leds[NUM_LEDS];
+
+int locked = 0;
+int updateLocked = 0;
+
+void changeColor(CRGB color)
+{
+  for (int i = 0; i <= NUM_LEDS; i++)
+  {
+    leds[i] = color;
+  }
+  FastLED.show();
+}
 
 void setup()
 {
@@ -16,6 +34,10 @@ void setup()
 
   SPI.begin();
   Serial.println();
+
+  FastLED.addLeds<NEOPIXEL, DATA_PIN>(leds, NUM_LEDS);
+
+  pinMode(A0, INPUT);
 
   WiFi.mode(WIFI_STA);
   WiFi.setSleepMode(WIFI_NONE_SLEEP);
@@ -62,6 +84,27 @@ void loop()
   {
     client.loop();
 
+    if(analogRead(A0) > 1000) {
+      locked = 1;
+    } else {
+      locked: 0;
+    }
+
+    if(locked == LOW) {
+      digitalWrite(2, LOW);
+
+      changeColor(CRGB::Red);
+
+      updateLocked = locked;
+    } else if (locked == HIGH && updateLocked == LOW) {
+      changeColor(CRGB::Blue);
+
+      delay(5000);
+
+      digitalWrite(2, HIGH);
+      updateLocked = locked;
+    }
+
     if (!mfrc_isNewCardPreset())
     {
       return;
@@ -89,6 +132,7 @@ void loop()
 
     if (content != "")
     {
+
       client.publish(getCard.c_str(), charBuf);
     }
 

@@ -57,6 +57,15 @@ void callback(char *topic, byte *payload, unsigned int length)
         // client.publish(yesConnect.c_str(), "1");
     }
 
+    if (strcmp(topic, cardOk.c_str()) == 0)
+    {
+        digitalWrite(16, LOW);
+
+        delay(5000);
+
+        digitalWrite(16, HIGH);
+    }
+
     Serial.println();
 }
 
@@ -85,6 +94,10 @@ bool pubsub_connected()
             // Your Subs
             client.subscribe(restart.c_str());
             client.subscribe(update.c_str());
+            client.subscribe(cardOk.c_str());
+            client.subscribe(cardFailed.c_str());
+            digitalWrite(16, HIGH);
+            digitalWrite(2, LOW);
         }
         else
         {
