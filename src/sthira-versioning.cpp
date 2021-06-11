@@ -6,8 +6,8 @@
 WiFiClientSecure deviceClient;
 
 const String FirmwareVer = {"5.0"};
-#define URL_fw_Version "https://raw.githubusercontent.com/romheraldi/sthira-rfid-module/master/version.txt"
-#define URL_fw_Bin "https://raw.githubusercontent.com/romheraldi/sthira-rfid-module/master/firmware.bin"
+#define URL_fw_Version "https://raw.githubusercontent.com/romheraldi/sthira-bathroom-module/master/version.txt"
+#define URL_fw_Bin "https://raw.githubusercontent.com/romheraldi/sthira-bathroom-module/master/firmware.bin"
 
 bool version_check()
 {
