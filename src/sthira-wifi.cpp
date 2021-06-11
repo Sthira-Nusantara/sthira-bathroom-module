@@ -8,6 +8,7 @@ const char *password = "IotSthiraNusantara@2712";
 void setup_wifi()
 {
     delay(10);
+    
     // We start by connecting to a WiFi network
     Serial.println();
     Serial.print("Connecting to ");

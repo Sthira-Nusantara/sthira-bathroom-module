@@ -2,6 +2,7 @@
 #include <ESP8266WiFi.h>
 #include <PubSubClient.h>
 #include "sthira-versioning.h"
+#include "main.h"
 
 const char *mqtt_server = "mqtt.rupira.com";
 const char *mqtt_username = "sthirasystemiot";
@@ -10,7 +11,7 @@ const char *mqtt_password = "Ud3^fn*mpWWKaLw8oRUBG5FY&NQ2A@cK^iVW*7FZCRqCgnKYEQ6
 String MacAdd = String(WiFi.macAddress());
 
 String COMPANY = "sthira";
-String DEVICE = "controller";
+String DEVICE = "cardreader";
 String UNUM = MacAdd;
 
 String prefix = COMPANY + "/" + DEVICE + "/" + UNUM;
@@ -59,11 +60,17 @@ void callback(char *topic, byte *payload, unsigned int length)
 
     if (strcmp(topic, cardOk.c_str()) == 0)
     {
-        digitalWrite(16, LOW);
+        if (locked == LOW) {
+            Serial.println("There is someone di the room");
+        } else {
+            Serial.println("Door open");
+            digitalWrite(16, HIGH);
 
-        delay(5000);
-
-        digitalWrite(16, HIGH);
+            delay(5000);
+            Serial.println("Door Close");
+            digitalWrite(16, LOW);
+        }
+        
     }
 
     Serial.println();
@@ -96,8 +103,8 @@ bool pubsub_connected()
             client.subscribe(update.c_str());
             client.subscribe(cardOk.c_str());
             client.subscribe(cardFailed.c_str());
-            digitalWrite(16, HIGH);
-            digitalWrite(2, LOW);
+            digitalWrite(16, LOW);
+            digitalWrite(2, HIGH);
         }
         else
         {

@@ -38,6 +38,8 @@ void setup()
   FastLED.addLeds<NEOPIXEL, DATA_PIN>(leds, NUM_LEDS);
 
   pinMode(A0, INPUT);
+  pinMode(16, OUTPUT);
+  pinMode(2, OUTPUT);
 
   WiFi.mode(WIFI_STA);
   WiFi.setSleepMode(WIFI_NONE_SLEEP);
@@ -80,34 +82,33 @@ void loop()
       }
     }
   }
-  else
-  {
     client.loop();
 
     if(analogRead(A0) > 1000) {
       locked = 1;
     } else {
-      locked: 0;
+      locked = 0;
     }
 
     if(locked == LOW) {
       digitalWrite(2, LOW);
 
-      changeColor(CRGB::Red);
+      // changeColor(CRGB::Red);
 
       updateLocked = locked;
     } else if (locked == HIGH && updateLocked == LOW) {
-      changeColor(CRGB::Blue);
+      // changeColor(CRGB::Blue);
 
-      delay(5000);
+      delay(5000);  
 
       digitalWrite(2, HIGH);
       updateLocked = locked;
     }
 
+    delay(500);
+
     if (!mfrc_isNewCardPreset())
     {
-      return;
     }
 
     if (!mfrc_readCardSerial())
@@ -132,10 +133,9 @@ void loop()
 
     if (content != "")
     {
-
       client.publish(getCard.c_str(), charBuf);
     }
+  
+    delay(500);
 
-    delay(1000);
-  }
 }
