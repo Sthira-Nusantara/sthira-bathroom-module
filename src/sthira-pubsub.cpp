@@ -12,6 +12,7 @@ String MacAdd = String(WiFi.macAddress());
 
 String COMPANY = "sthira";
 String DEVICE = "cardreader";
+String DEVICE2 = "controller";
 String UNUM = MacAdd;
 
 String prefix = COMPANY + "/" + DEVICE + "/" + UNUM;

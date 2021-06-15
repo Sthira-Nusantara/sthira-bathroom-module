@@ -11,31 +11,20 @@
 
 #define NUM_LEDS 1
 #define DATA_PIN 3
-
 CRGB leds[NUM_LEDS];
 
 int locked = 0;
 int updateLocked = 0;
-
-void changeColor(CRGB color)
-{
-  for (int i = 0; i <= NUM_LEDS; i++)
-  {
-    leds[i] = color;
-  }
-  FastLED.show();
-}
 
 void setup()
 {
   Serial.begin(115200);
 
   printOpening();
+  FastLED.addLeds<NEOPIXEL, DATA_PIN>(leds, NUM_LEDS);
 
   SPI.begin();
   Serial.println();
-
-  FastLED.addLeds<NEOPIXEL, DATA_PIN>(leds, NUM_LEDS);
 
   pinMode(A0, INPUT);
   pinMode(16, OUTPUT);
@@ -47,8 +36,22 @@ void setup()
   delay(100);
   mfrc_init();
 
+  delay(250);
+
   delay(100);
   setup_wifi();
+
+  leds[0] = CRGB::Red;
+  FastLED.show();
+  delay(100);
+  leds[0] = CRGB::Green;
+  FastLED.show();
+  delay(100);
+  leds[0] = CRGB::Blue;
+  FastLED.show();
+  delay(100);
+  leds[0] = CRGB::Yellow;
+  FastLED.show();
 
   if (version_check())
   {
@@ -82,60 +85,79 @@ void loop()
       }
     }
   }
-    client.loop();
+  client.loop();
 
-    if(analogRead(A0) > 1000) {
-      locked = 1;
-    } else {
-      locked = 0;
-    }
+  if (analogRead(A0) > 1000)
+  {
+    locked = 1;
+  }
+  else
+  {
+    locked = 0;
+  }
 
-    if(locked == LOW) {
-      digitalWrite(2, LOW);
+  if (locked == LOW)
+  {
+    delay(100);
+    leds[0] = CRGB::Red;
+    FastLED.show();
+    digitalWrite(2, LOW);
 
-      // changeColor(CRGB::Red);
+    updateLocked = locked;
+  }
+  else if (locked == HIGH && updateLocked == LOW)
+  {
+    delay(100);
+    leds[0] = CRGB::Blue;
+    FastLED.show();
 
-      updateLocked = locked;
-    } else if (locked == HIGH && updateLocked == LOW) {
-      // changeColor(CRGB::Blue);
+    delay(5000);
 
-      delay(5000);  
+    digitalWrite(2, HIGH);
+    updateLocked = locked;
+  }
+  else
+  {
 
-      digitalWrite(2, HIGH);
-      updateLocked = locked;
-    }
+    delay(100);
+    leds[0] = CRGB::Blue;
+    FastLED.show();
+  }
 
-    delay(500);
+  delay(500);
 
-    if (!mfrc_isNewCardPreset())
-    {
-    }
+  if (!mfrc_isNewCardPreset())
+  {
+    return;
+  }
 
-    if (!mfrc_readCardSerial())
-    {
-      return;
-    }
+  if (!mfrc_readCardSerial())
+  {
+    return;
+  }
 
-    Serial.println();
-    Serial.print(" UID tag :");
-    String content = "";
+  Serial.println();
+  Serial.print(" UID tag :");
+  String content = "";
 
-    for (byte i = 0; i < mfrc522.uid.size; i++)
-    {
-      content.concat(String(mfrc522.uid.uidByte[i], HEX));
-    }
+  for (byte i = 0; i < mfrc522.uid.size; i++)
+  {
+    content.concat(String(mfrc522.uid.uidByte[i], HEX));
+  }
 
-    content.toUpperCase();
-    Serial.print(content);
+  content.toUpperCase();
+  Serial.print(content);
 
-    char charBuf[content.length() + 1];
-    content.toCharArray(charBuf, content.length() + 1);
+  char charBuf[content.length() + 1];
+  content.toCharArray(charBuf, content.length() + 1);
 
-    if (content != "")
-    {
-      client.publish(getCard.c_str(), charBuf);
-    }
-  
-    delay(500);
+  if (content != "")
+  {
+    delay(100);
+    leds[0] = CRGB::Green;
+    FastLED.show();
+    client.publish(getCard.c_str(), charBuf);
+  }
 
+  delay(500);
 }
