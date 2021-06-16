@@ -67,7 +67,7 @@ void callback(char *topic, byte *payload, unsigned int length)
             Serial.println("Door open");
             digitalWrite(16, HIGH);
 
-            delay(5000);
+            delay(3000);
             Serial.println("Door Close");
             digitalWrite(16, LOW);
         }

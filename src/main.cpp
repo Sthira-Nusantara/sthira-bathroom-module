@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include <ESP8266WiFi.h>
 #include <SPI.h>
-#include <FastLED.h>
+// #include <FastLED.h>
 
 #include "sthira-opening.h"
 #include "sthira-versioning.h"
@@ -9,9 +9,9 @@
 #include "sthira-mfrc.h"
 #include "sthira-pubsub.h"
 
-#define NUM_LEDS 1
-#define DATA_PIN 3
-CRGB leds[NUM_LEDS];
+// #define NUM_LEDS 1
+// #define DATA_PIN 3
+// CRGB leds[NUM_LEDS];
 
 int locked = 0;
 int updateLocked = 0;
@@ -21,14 +21,14 @@ void setup()
   Serial.begin(115200);
 
   printOpening();
-  FastLED.addLeds<NEOPIXEL, DATA_PIN>(leds, NUM_LEDS);
 
   SPI.begin();
   Serial.println();
 
   pinMode(A0, INPUT);
-  pinMode(16, OUTPUT);
-  pinMode(2, OUTPUT);
+  pinMode(16, OUTPUT); // KUNCI
+  pinMode(0, OUTPUT); //  LAMPU
+  pinMode(2, OUTPUT); // LAMPU LUAR
 
   WiFi.mode(WIFI_STA);
   WiFi.setSleepMode(WIFI_NONE_SLEEP);
@@ -40,18 +40,6 @@ void setup()
 
   delay(100);
   setup_wifi();
-
-  leds[0] = CRGB::Red;
-  FastLED.show();
-  delay(100);
-  leds[0] = CRGB::Green;
-  FastLED.show();
-  delay(100);
-  leds[0] = CRGB::Blue;
-  FastLED.show();
-  delay(100);
-  leds[0] = CRGB::Yellow;
-  FastLED.show();
 
   if (version_check())
   {
@@ -98,30 +86,19 @@ void loop()
 
   if (locked == LOW)
   {
-    delay(100);
-    leds[0] = CRGB::Red;
-    FastLED.show();
+    digitalWrite(0, LOW);
     digitalWrite(2, LOW);
 
     updateLocked = locked;
   }
   else if (locked == HIGH && updateLocked == LOW)
   {
-    delay(100);
-    leds[0] = CRGB::Blue;
-    FastLED.show();
+    digitalWrite(0, HIGH);
 
     delay(5000);
 
     digitalWrite(2, HIGH);
     updateLocked = locked;
-  }
-  else
-  {
-
-    delay(100);
-    leds[0] = CRGB::Blue;
-    FastLED.show();
   }
 
   delay(500);
@@ -153,9 +130,7 @@ void loop()
 
   if (content != "")
   {
-    delay(100);
-    leds[0] = CRGB::Green;
-    FastLED.show();
+    digitalWrite(2, LOW);
     client.publish(getCard.c_str(), charBuf);
   }
 
