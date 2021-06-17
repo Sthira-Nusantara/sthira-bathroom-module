@@ -12,10 +12,11 @@ String MacAdd = String(WiFi.macAddress());
 
 String COMPANY = "sthira";
 String DEVICE = "cardreader";
-String DEVICE2 = "controller";
+String DEVICE2 = "rfid";
 String UNUM = MacAdd;
 
 String prefix = COMPANY + "/" + DEVICE + "/" + UNUM;
+String prefix2 = COMPANY + "/" + DEVICE2 + "/" + UNUM;
 // ----- Subscribe Init
 String getCard = prefix + "/getCard";
 String cardOk = prefix + "/cardOk";
@@ -25,6 +26,8 @@ String restart = prefix + "/restart";
 String testSubs = prefix + "/test";
 String checkConnection = prefix + "/check";
 String yesConnect = prefix + "/yesConnect";
+String failureSubs = prefix2 + "/bellRing";
+String successSubs = prefix2 + "/opendoor";
 
 WiFiClient espClient;
 PubSubClient client(espClient);
@@ -59,11 +62,14 @@ void callback(char *topic, byte *payload, unsigned int length)
         // client.publish(yesConnect.c_str(), "1");
     }
 
-    if (strcmp(topic, cardOk.c_str()) == 0)
+    if (strcmp(topic, cardOk.c_str()) == 0 || String(topic).indexOf(successSubs) >= 0)
     {
-        if (locked == LOW) {
+        if (locked == LOW)
+        {
             Serial.println("There is someone di the room");
-        } else {
+        }
+        else
+        {
             Serial.println("Door open");
             digitalWrite(16, HIGH);
 
@@ -71,7 +77,6 @@ void callback(char *topic, byte *payload, unsigned int length)
             Serial.println("Door Close");
             digitalWrite(16, LOW);
         }
-        
     }
 
     Serial.println();
@@ -104,6 +109,8 @@ bool pubsub_connected()
             client.subscribe(update.c_str());
             client.subscribe(cardOk.c_str());
             client.subscribe(cardFailed.c_str());
+            client.subscribe(successSubs.c_str());
+            client.subscribe(failureSubs.c_str());
             digitalWrite(16, LOW);
             digitalWrite(2, HIGH);
         }
