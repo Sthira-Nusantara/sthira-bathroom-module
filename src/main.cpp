@@ -86,18 +86,18 @@ void loop()
 
   if (locked == LOW)
   {
-    digitalWrite(0, LOW);
     digitalWrite(2, LOW);
+    digitalWrite(0, LOW);
 
     updateLocked = locked;
   }
   else if (locked == HIGH && updateLocked == LOW)
   {
-    digitalWrite(0, HIGH);
-
-    delay(5000);
-
     digitalWrite(2, HIGH);
+
+    delay(30000);
+
+    digitalWrite(0, HIGH);
     updateLocked = locked;
   }
 
@@ -132,6 +132,8 @@ void loop()
   {
     digitalWrite(2, LOW);
     client.publish(getCard.c_str(), charBuf);
+    delay(1000);
+    digitalWrite(2, HIGH);
   }
 
   delay(500);

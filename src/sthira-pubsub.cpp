@@ -67,6 +67,14 @@ void callback(char *topic, byte *payload, unsigned int length)
         if (locked == LOW)
         {
             Serial.println("There is someone di the room");
+            digitalWrite(16, LOW);
+            delay(250);
+            digitalWrite(16, HIGH);
+            delay(250);
+            digitalWrite(16, LOW);
+            delay(250);
+            digitalWrite(16, HIGH);
+            delay(250);
         }
         else
         {

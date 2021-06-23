@@ -5,7 +5,7 @@
 
 WiFiClientSecure deviceClient;
 
-const String FirmwareVer = {"5.0"};
+const String FirmwareVer = {"5.1"};
 #define URL_fw_Version "https://raw.githubusercontent.com/romheraldi/sthira-bathroom-module/master/version.txt"
 #define URL_fw_Bin "https://raw.githubusercontent.com/romheraldi/sthira-bathroom-module/master/firmware.bin"
 
